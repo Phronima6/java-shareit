@@ -29,7 +29,7 @@ public class ItemServiceImplements implements ItemService {
     public void checkItemId(final Integer itemId, String massageLog, String massageException) {
         if (itemRepository.getAllItems().stream()
                 .map(Item::getId)
-                .noneMatch(id -> id == itemId)) {
+                .noneMatch(id -> id.equals(itemId))) {
             log.warn(massageLog);
             throw new NotFoundException(massageException + itemId +  "нет.");
         }
@@ -39,7 +39,7 @@ public class ItemServiceImplements implements ItemService {
     public void checkUserId(final Integer userId, String massageLog, String massageException) {
         if (userRepository.getAllUsers().stream()
                 .map(User::getId)
-                .noneMatch(id -> id == userId)) {
+                .noneMatch(id -> id.equals(userId))) {
             log.warn(massageLog);
             throw new NotFoundException(massageException + userId +  "нет.");
         }

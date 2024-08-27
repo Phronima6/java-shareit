@@ -35,7 +35,7 @@ public class UserServiceImplements implements UserService {
     public void checkUserId(final Integer userId, String massageLog, String massageException) {
         if (userRepository.getAllUsers().stream()
                 .map(User::getId)
-                .noneMatch(id -> id == userId)) {
+                .noneMatch(id -> id.equals(userId))) {
             log.warn(massageLog);
             throw new NotFoundException(massageException + userId +  ".");
         }
