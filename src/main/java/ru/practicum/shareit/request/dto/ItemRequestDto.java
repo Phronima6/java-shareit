@@ -20,7 +20,7 @@ public class ItemRequestDto {
     LocalDateTime created;
     @NotBlank(groups = {CreateGroup.class}, message = "Описание требуемой вещи не может быть пустым.")
     String description;
-    int id;
+    Long id;
     @NotNull(groups = {CreateGroup.class}, message = "Поле с пользователем, создавшим запрос, не может быть пустым.")
     User requestor;
 

@@ -43,7 +43,7 @@ public class ItemControllerTest {
         itemDto.setName("Sample Item");
         itemDto.setDescription("This is a sample item description.");
         itemDto.setAvailable(true);
-        when(itemService.createItem(anyInt(), any(ItemDto.class))).thenReturn(itemDto);
+        when(itemService.createItem(anyLong(), any(ItemDto.class))).thenReturn(itemDto);
         mockMvc.perform(post("/items")
                         .header("X-Sharer-User-Id", 1)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -53,8 +53,7 @@ public class ItemControllerTest {
 
     @Test
     void getAllItemsFromUser() throws Exception {
-        when(itemService.getAllItemsFromUser(anyInt())).thenReturn(Collections.emptyList());
-
+        when(itemService.getAllItemsFromUser(anyLong())).thenReturn(Collections.emptyList());
         mockMvc.perform(get("/items")
                         .header("X-Sharer-User-Id", 1))
                 .andExpect(status().isOk());
@@ -63,15 +62,16 @@ public class ItemControllerTest {
     @Test
     void getItem() throws Exception {
         ItemDto itemDto = new ItemDto();
-        when(itemService.getItem(anyInt())).thenReturn(itemDto);
-        mockMvc.perform(get("/items/{itemId}", 1))
+        when(itemService.getItem(anyLong(), anyLong())).thenReturn(itemDto);
+        mockMvc.perform(get("/items/{itemId}", 1)
+                        .header("X-Sharer-User-Id", 1))
                 .andExpect(status().isOk());
     }
 
     @Test
     void updateItem() throws Exception {
         ItemDto itemDto = new ItemDto();
-        when(itemService.updateItem(anyInt(), anyInt(), any(ItemDto.class))).thenReturn(itemDto);
+        when(itemService.updateItem(anyLong(), anyLong(), any(ItemDto.class))).thenReturn(itemDto);
         mockMvc.perform(patch("/items/{itemId}", 1)
                         .header("X-Sharer-User-Id", 1)
                         .contentType(MediaType.APPLICATION_JSON)

@@ -1,32 +1,40 @@
 package ru.practicum.shareit.booking.mapper;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingDtoInput;
+import ru.practicum.shareit.booking.dto.BookingDtoOutput;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.user.dto.UserDto;
 
 @Component
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingMapper {
 
-    public BookingDto toBookingDto(final Booking booking) {
-        final BookingDto bookingDto = new BookingDto();
-        bookingDto.setBooker(booking.getBooker());
-        bookingDto.setEnd(booking.getEnd());
-        bookingDto.setId(booking.getId());
-        bookingDto.setItem(booking.getItem());
-        bookingDto.setStart(booking.getStart());
-        bookingDto.setStatus(booking.getStatus());
-        return bookingDto;
+    public Booking toBooking(final BookingDtoInput bookingDtoInput) {
+        final Booking booking = new Booking();
+        booking.setEnd(bookingDtoInput.getEnd());
+        booking.setItemId(bookingDtoInput.getItemId());
+        booking.setStart(bookingDtoInput.getStart());
+        return booking;
     }
 
-    public Booking toBooking(final BookingDto bookingDto) {
-        final Booking booking = new Booking();
-        booking.setBooker(bookingDto.getBooker());
-        booking.setEnd(bookingDto.getEnd());
-        booking.setId(bookingDto.getId());
-        booking.setItem(bookingDto.getItem());
-        booking.setStart(bookingDto.getStart());
-        booking.setStatus(bookingDto.getStatus());
-        return booking;
+    public BookingDtoOutput toBookingDtoOutput(final Booking booking) {
+        final BookingDtoOutput bookingDtoOutput = new BookingDtoOutput();
+        final UserDto userDto = new UserDto();
+        userDto.setId(booking.getBooker().getId());
+        bookingDtoOutput.setBooker(userDto);
+        bookingDtoOutput.setEnd(booking.getEnd());
+        bookingDtoOutput.setId(booking.getId());
+        final ItemDto itemDto = new ItemDto();
+        itemDto.setId(booking.getItem().getId());
+        itemDto.setName(booking.getItem().getName());
+        bookingDtoOutput.setItem(itemDto);
+        bookingDtoOutput.setStart(booking.getStart());
+        bookingDtoOutput.setStatus(booking.getStatus());
+        return bookingDtoOutput;
     }
 
 }
