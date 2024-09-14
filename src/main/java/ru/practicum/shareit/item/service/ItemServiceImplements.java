@@ -42,8 +42,8 @@ public class ItemServiceImplements implements ItemService {
     @Override
     public CommentDto createComment(final Long userId, final Long itemId, final CommentDto commentDto) {
         Booking booking = bookingRepository.findByBookerIdAndItemId(userId, itemId)
-                .orElseThrow(() -> new NotFoundException(STR
-                        ."Ошибка при создании отзыва. Пользователь id\{userId} не бронировал вещь id\{itemId}."));
+                .orElseThrow(() -> new NotFoundException("Ошибка при создании отзыва."
+                        + " Пользователь не бронировал эту вещь."));
         if (booking.getEnd().isAfter(LocalDateTime.now())) {
             log.info("ItemServiceImplements, createComment, endDataIsAfter.");
             throw new DataException("Ошибка при создании отзыва. Бронирование ещё не завершено.");
@@ -58,8 +58,8 @@ public class ItemServiceImplements implements ItemService {
     @Override
     public ItemDto createItem(final Long userId, final ItemDto itemDto) {
         if (!userRepository.existsById(userId)) {
-            log.warn(STR."ItemServiceImplements, createItem, \{userId}.");
-            throw new NotFoundException(STR."Ошибка при добавлении вещи. Пользователя id\{userId} нет.");
+            log.warn("ItemServiceImplements, createItem.");
+            throw new NotFoundException("Ошибка при добавлении вещи. Такого пользователя нет.");
         }
         final Item item = itemMapper.toItem(itemDto);
         item.setOwner(userRepository.getById(userId));
@@ -103,7 +103,7 @@ public class ItemServiceImplements implements ItemService {
         final Item itemOld = itemRepository.getById(itemId);
         if (!itemOld.getOwner().getId().equals(userId)) {
             log.warn("ItemServiceImplements, updateItem.");
-            throw new NotFoundException(STR."Ошибка, эта вещь не принадлежит пользователю id\{userId}.");
+            throw new NotFoundException("Ошибка, эта вещь не принадлежит пользователю.");
         }
         if (item.getAvailable() == null) {
             log.info("ItemServiceImplements, updateItem, availableIsEmpty.");
