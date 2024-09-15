@@ -1,20 +1,28 @@
 package ru.practicum.shareit.request.model;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 
-@Data
-@EqualsAndHashCode(exclude = {"id"})
+@Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Getter
+@Setter
+@Table(name = "item_requests")
 public class ItemRequest {
 
-    LocalDateTime created; // Дата и время создания запроса
+    @Column(nullable = false)
+    LocalDateTime created = LocalDateTime.now(); // Дата и время создания запроса
+    @Column(nullable = false)
     String description; // Описание запроса
-    int id; // Идентификатор запроса
+    @Column(nullable = false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id; // Идентификатор запроса
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "requestor_id", nullable = false)
     User requestor; // Пользователь, создавший запрос
 
 }

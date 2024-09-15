@@ -5,13 +5,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.comment.dto.CommentDto;
+import ru.practicum.shareit.comment.mapper.CommentMapper;
+import ru.practicum.shareit.comment.model.Comment;
+import ru.practicum.shareit.comment.repository.CommentRepository;
+import ru.practicum.shareit.exception.DataException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -19,70 +28,83 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Service
 @Slf4j
+@Transactional
 public class ItemServiceImplements implements ItemService {
 
+    BookingMapper bookingMapper;
+    BookingRepository bookingRepository;
+    CommentMapper commentMapper;
+    CommentRepository commentRepository;
     ItemMapper itemMapper;
     ItemRepository itemRepository;
     UserRepository userRepository;
 
-    // Проверка наличия вещи в базе данных
-    public void checkItemId(final Integer itemId, String massageLog, String massageException) {
-        if (itemRepository.getAllItems().stream()
-                .map(Item::getId)
-                .noneMatch(id -> id.equals(itemId))) {
-            log.warn(massageLog);
-            throw new NotFoundException(massageException + itemId +  "нет.");
+    @Override
+    public CommentDto createComment(final Long userId, final Long itemId, final CommentDto commentDto) {
+        Booking booking = bookingRepository.findByBookerIdAndItemId(userId, itemId)
+                .orElseThrow(() -> new NotFoundException("Ошибка при создании отзыва."
+                        + " Пользователь не бронировал эту вещь."));
+        if (booking.getEnd().isAfter(LocalDateTime.now())) {
+            log.info("ItemServiceImplements, createComment, endDataIsAfter.");
+            throw new DataException("Ошибка при создании отзыва. Бронирование ещё не завершено.");
         }
-    }
-
-    // Проверка наличия пользователя в базе данных
-    public void checkUserId(final Integer userId, String massageLog, String massageException) {
-        if (userRepository.getAllUsers().stream()
-                .map(User::getId)
-                .noneMatch(id -> id.equals(userId))) {
-            log.warn(massageLog);
-            throw new NotFoundException(massageException + userId +  "нет.");
-        }
+        Comment comment = commentMapper.toComment(commentDto);
+        comment.setAuthor(userRepository.getById(userId));
+        comment.setCreated(LocalDateTime.now());
+        comment.setItem(itemRepository.getById(itemId));
+        return commentMapper.toCommentDto(commentRepository.save(comment));
     }
 
     @Override
-    public ItemDto createItem(final Integer userId, final ItemDto itemDto) {
-        checkUserId(userId, "ItemServiceImplements, createItem.",
-                "Ошибка при попытке добавления вещи. Пользователя с таким id = ");
+    public ItemDto createItem(final Long userId, final ItemDto itemDto) {
+        if (!userRepository.existsById(userId)) {
+            log.warn("ItemServiceImplements, createItem.");
+            throw new NotFoundException("Ошибка при добавлении вещи. Такого пользователя нет.");
+        }
         final Item item = itemMapper.toItem(itemDto);
-        item.setOwner(userRepository.getUser(userId));
-        return itemMapper.toItemDto(itemRepository.createItem(item));
+        item.setOwner(userRepository.getById(userId));
+        return itemMapper.toItemDto(itemRepository.save(item));
     }
 
     @Override
-    public Collection<ItemDto> getAllItemsFromUser(final Integer userId) {
-        checkUserId(userId, "ItemServiceImplements, findAllItemsFromUser.",
-                "Ошибка при попытке получения всех вещей пользователя. Пользователя с таким id = ");
-        return itemRepository.getAllItemsFromUser(userId).stream()
+    @Transactional(readOnly = true)
+    public Collection<ItemDto> getAllItemsFromUser(final Long userId) {
+        return itemRepository.findAllByOwnerId(userId).stream()
                 .map(itemMapper::toItemDto)
                 .toList();
     }
 
     @Override
-    public ItemDto getItem(final Integer itemId) {
-        checkItemId(itemId, "ItemServiceImplements, findItem.",
-                "Ошибка при попытке получить вещь. Вещи с таким id = ");
-        return itemMapper.toItemDto(itemRepository.getItem(itemId));
+    @Transactional(readOnly = true)
+    public ItemDto getItem(final Long userId, final Long itemId) {
+        final ItemDto itemDto = itemMapper.toItemDto(itemRepository.getById(itemId));
+        LocalDateTime now = LocalDateTime.now();
+        itemDto.setComments(commentRepository.findAllByItemId(itemId).stream()
+                .map(commentMapper::toCommentDto)
+                .toList());
+        itemDto.setLastBooking(bookingRepository.findLastBooking(itemId, now)
+                .map(bookingMapper::toBookingDtoOutput)
+                .orElse(null));
+        if (itemDto.getLastBooking() != null && itemDto.getLastBooking().getItem().getLastBooking() == null) {
+            itemDto.setLastBooking(null);
+        }
+        itemDto.setNextBooking(bookingRepository.findNextBooking(itemId, now)
+                .map(bookingMapper::toBookingDtoOutput)
+                .orElse(null));
+        if (itemDto.getNextBooking() != null && itemDto.getNextBooking().getItem().getNextBooking() == null) {
+            itemDto.setNextBooking(null);
+        }
+        return itemDto;
     }
 
     @Override
-    public ItemDto updateItem(final Integer userId,  final Integer itemId, final ItemDto itemDto) {
-        checkItemId(itemId, "ItemServiceImplements, updateItem.",
-                "Ошибка при попытке обновить вещь. Вещи с таким id = ");
-        checkUserId(userId, "ItemServiceImplements, updateItem.",
-                "Ошибка при попытке обновить вещь. Пользователя с таким id = ");
-        final Item itemOld = itemRepository.getItem(itemId);
-        if (itemOld.getOwner().getId() != userId) {
-            log.warn("ItemServiceImplements, updateItem.");
-            throw new NotFoundException("Ошибка при попытке обновить вещь. Эта вещь не принадлежит пользователю"
-                    + " с таким id = " + userId + ".");
-        }
+    public ItemDto updateItem(final Long userId,  final Long itemId, final ItemDto itemDto) {
         final Item item = itemMapper.toItem(itemDto);
+        final Item itemOld = itemRepository.getById(itemId);
+        if (!itemOld.getOwner().getId().equals(userId)) {
+            log.warn("ItemServiceImplements, updateItem.");
+            throw new NotFoundException("Ошибка, эта вещь не принадлежит пользователю.");
+        }
         if (item.getAvailable() == null) {
             log.info("ItemServiceImplements, updateItem, availableIsEmpty.");
             item.setAvailable(itemOld.getAvailable());
@@ -95,11 +117,12 @@ public class ItemServiceImplements implements ItemService {
             log.info("ItemServiceImplements, updateItem, nameIsEmpty.");
             item.setName(itemOld.getName());
         }
-        item.setOwner(userRepository.getUser(userId));
-        return itemMapper.toItemDto(itemRepository.updateItem(itemId, item));
+        item.setOwner(userRepository.getById(userId));
+        return itemMapper.toItemDto(itemRepository.save(item));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Collection<ItemDto> searchItem(final String text) {
         if (text.isEmpty()) {
             log.info("ItemServiceImplements, searchItem, textIsEmpty.");

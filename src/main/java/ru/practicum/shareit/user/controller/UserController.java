@@ -1,6 +1,5 @@
 package ru.practicum.shareit.user.controller;
 
-import jakarta.validation.constraints.Positive;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,18 +26,18 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable @Positive final Integer userId) {
+    public void deleteUser(@PathVariable final Long userId) {
         userService.deleteUser(userId);
     }
 
     @GetMapping("/{userId}")
-    public UserDto getUser(@PathVariable @Positive final Integer userId) {
+    public UserDto getUser(@PathVariable final Long userId) {
         return userService.getUser(userId);
     }
 
 
     @PatchMapping("/{userId}")
-    public UserDto updateUser(@PathVariable @Positive final Integer userId, @RequestBody final UserDto userDto) {
+    public UserDto updateUser(@PathVariable final Long userId, @RequestBody final UserDto userDto) {
         return userService.updateUser(userId, userDto);
     }
 

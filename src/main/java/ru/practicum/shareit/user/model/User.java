@@ -1,17 +1,23 @@
 package ru.practicum.shareit.user.model;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Data
-@EqualsAndHashCode(exclude = {"id"})
+@Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Getter
+@Setter
+@Table(name = "users")
 public class User {
 
+    @Column(nullable = false)
     String email; // Электронная почта пользователя
-    int id; // Идентификатор пользователя
+    @Column(nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    Long id; // Идентификатор пользователя
+    @Column(nullable = false)
     String name; // Имя пользователя
 
 }

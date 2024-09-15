@@ -1,26 +1,24 @@
 package ru.practicum.shareit.item.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import ru.practicum.shareit.item.model.Item;
 import java.util.Collection;
 
-public interface ItemRepository {
-
-    // Добавление вещи
-    Item createItem(final Item item);
-
-    // Получение всех вещей
-    Collection<Item> getAllItems();
+public interface ItemRepository extends JpaRepository<Item, Long> {
 
     // Получение всех вещей пользователя
-    Collection<Item> getAllItemsFromUser(final Integer userId);
-
-    // Получение вещи
-    Item getItem(final Integer itemId);
-
-    // Обновление вещи
-    Item updateItem(final Integer itemId, final Item item);
+    Collection<Item> findAllByOwnerId(final Long userId);
 
     // Поиск вещи по тексту
-    Collection<Item> searchItem(final String text);
+    @Query("""
+            SELECT i
+            FROM Item i
+            WHERE i.available = true
+                AND (LOWER(i.name) LIKE LOWER(CONCAT('%', :text, '%'))
+                OR LOWER(i.description) LIKE LOWER(CONCAT('%', :text, '%')))
+            """)
+    Collection<Item> searchItem(@Param("text") final String text);
 
 }
