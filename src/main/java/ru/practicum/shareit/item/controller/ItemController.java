@@ -19,7 +19,7 @@ import java.util.Collection;
 public class ItemController {
 
     ItemService itemService;
-    String xHeader = "X-Sharer-User-Id";
+    final static String xHeader = "X-Sharer-User-Id";
 
     @PostMapping("/{itemId}/comment")
     @ResponseStatus(HttpStatus.CREATED)

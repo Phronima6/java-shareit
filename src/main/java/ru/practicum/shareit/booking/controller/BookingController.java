@@ -19,7 +19,7 @@ import java.util.Collection;
 public class BookingController {
 
     BookingService bookingService;
-    String xHeader = "X-Sharer-User-Id";
+    final static String xHeader = "X-Sharer-User-Id";
 
     @PatchMapping("/{bookingId}")
     public BookingDtoOutput confirmationBooking(@RequestHeader(xHeader) final Long userId,
