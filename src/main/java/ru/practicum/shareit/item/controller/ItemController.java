@@ -19,10 +19,11 @@ import java.util.Collection;
 public class ItemController {
 
     ItemService itemService;
+    String xHeader = "X-Sharer-User-Id";
 
     @PostMapping("/{itemId}/comment")
     @ResponseStatus(HttpStatus.CREATED)
-    public CommentDto createComment(@RequestHeader("X-Sharer-User-Id")final Long userId,
+    public CommentDto createComment(@RequestHeader(xHeader)final Long userId,
                                     @PathVariable final Long itemId,
                                     @RequestBody @Validated(CreateGroup.class) final CommentDto commentDto) {
         return itemService.createComment(userId, itemId, commentDto);
@@ -30,23 +31,23 @@ public class ItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDto createItem(@RequestHeader("X-Sharer-User-Id")final Long userId,
+    public ItemDto createItem(@RequestHeader(xHeader)final Long userId,
                               @RequestBody @Validated(CreateGroup.class) final ItemDto itemDto) {
         return itemService.createItem(userId, itemDto);
     }
 
     @GetMapping
-    public Collection<ItemDto> getAllItemsFromUser(@RequestHeader("X-Sharer-User-Id") final Long userId) {
+    public Collection<ItemDto> getAllItemsFromUser(@RequestHeader(xHeader) final Long userId) {
         return itemService.getAllItemsFromUser(userId);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItem(@RequestHeader("X-Sharer-User-Id") final Long userId, @PathVariable final Long itemId) {
+    public ItemDto getItem(@RequestHeader(xHeader) final Long userId, @PathVariable final Long itemId) {
         return itemService.getItem(userId, itemId);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") final Long userId,
+    public ItemDto updateItem(@RequestHeader(xHeader) final Long userId,
                               @PathVariable final Long itemId,
                               @RequestBody final ItemDto itemDto) {
         return itemService.updateItem(userId, itemId, itemDto);

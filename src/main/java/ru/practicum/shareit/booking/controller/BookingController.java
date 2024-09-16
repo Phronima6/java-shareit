@@ -19,9 +19,10 @@ import java.util.Collection;
 public class BookingController {
 
     BookingService bookingService;
+    String xHeader = "X-Sharer-User-Id";
 
     @PatchMapping("/{bookingId}")
-    public BookingDtoOutput confirmationBooking(@RequestHeader("X-Sharer-User-Id") final Long userId,
+    public BookingDtoOutput confirmationBooking(@RequestHeader(xHeader) final Long userId,
                                                @PathVariable final Long bookingId,
                                                @RequestParam final Boolean approved) {
         return bookingService.confirmationBooking(userId, bookingId, approved);
@@ -29,25 +30,25 @@ public class BookingController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BookingDtoOutput createBooking(@RequestHeader("X-Sharer-User-Id") final Long userId,
+    public BookingDtoOutput createBooking(@RequestHeader(xHeader) final Long userId,
                                           @RequestBody final BookingDtoInput bookingDtoInput) {
         return bookingService.createBooking(userId, bookingDtoInput);
     }
 
     @GetMapping("/owner")
-    public Collection<BookingDtoOutput> getAllBookingsFromOwner(@RequestHeader("X-Sharer-User-Id") final Long userId,
+    public Collection<BookingDtoOutput> getAllBookingsFromOwner(@RequestHeader(xHeader) final Long userId,
                                                                 @RequestParam (defaultValue = "ALL") final State state) {
         return bookingService.getAllBookingsFromUser(TypeUser.OWNER, userId, state);
     }
 
     @GetMapping
-    public Collection<BookingDtoOutput> getAllBookingsFromUser(@RequestHeader("X-Sharer-User-Id") final Long userId,
+    public Collection<BookingDtoOutput> getAllBookingsFromUser(@RequestHeader(xHeader) final Long userId,
                                                                @RequestParam (defaultValue = "ALL") final State state) {
         return bookingService.getAllBookingsFromUser(TypeUser.USER, userId, state);
     }
 
     @GetMapping("/{bookingId}")
-    public BookingDtoOutput getBooking(@RequestHeader("X-Sharer-User-Id") final Long userId,
+    public BookingDtoOutput getBooking(@RequestHeader(xHeader) final Long userId,
                                        @PathVariable final Long bookingId) {
         return bookingService.getBooking(userId, bookingId);
     }
