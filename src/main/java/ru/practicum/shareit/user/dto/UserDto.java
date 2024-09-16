@@ -16,8 +16,9 @@ public class UserDto {
     @Email(groups = {CreateGroup.class}, message = "Некорректно введен email пользователя.")
     @NotBlank(groups = {CreateGroup.class}, message = "Поле с электронной почтой пользователя не может быть пустым.")
     String email;
-    int id;
+    Long id;
     @NotBlank(groups = {CreateGroup.class}, message = "Имя пользователя не может быть пустым.")
     String name;
+    String authorName;
 
 }

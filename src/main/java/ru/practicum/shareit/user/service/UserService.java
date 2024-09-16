@@ -8,12 +8,12 @@ public interface UserService {
     UserDto createUser(final UserDto userDto);
 
     // Удаление пользователя
-    void deleteUser(final Integer userId);
+    void deleteUser(final Long userId);
 
     // Получение пользователе
-    UserDto getUser(final Integer userId);
+    UserDto getUser(final Long userId);
 
     // Обновление пользователя
-    UserDto updateUser(final Integer userId, final UserDto userDto);
+    UserDto updateUser(final Long userId, final UserDto userDto);
 
 }
