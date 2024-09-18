@@ -50,7 +50,7 @@ public class UserControllerTest {
 
     @Test
     void deleteUser() throws Exception {
-        doNothing().when(userService).deleteUser(anyInt());
+        doNothing().when(userService).deleteUser(anyLong());
         mockMvc.perform(delete("/users/{userId}", 1))
                 .andExpect(status().isNoContent());
     }
@@ -58,7 +58,7 @@ public class UserControllerTest {
     @Test
     void getUser() throws Exception {
         UserDto userDto = new UserDto();
-        when(userService.getUser(anyInt())).thenReturn(userDto);
+        when(userService.getUser(anyLong())).thenReturn(userDto);
         mockMvc.perform(get("/users/{userId}", 1))
                 .andExpect(status().isOk());
     }
@@ -66,7 +66,7 @@ public class UserControllerTest {
     @Test
     void updateUser() throws Exception {
         UserDto userDto = new UserDto();
-        when(userService.updateUser(anyInt(), any(UserDto.class))).thenReturn(userDto);
+        when(userService.updateUser(anyLong(), any(UserDto.class))).thenReturn(userDto);
         mockMvc.perform(patch("/users/{userId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDto)))
