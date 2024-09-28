@@ -45,7 +45,7 @@ public class ItemRequestServiceTest {
         ItemRequestDto itemRequestDto = new ItemRequestDto();
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> {itemRequestService.createItemRequest(userId, itemRequestDto);});
+                () -> itemRequestService.createItemRequest(userId, itemRequestDto));
         assertEquals("Ошибка при создании запроса. Пользователя с id = " + userId + " нет.",
                 exception.getMessage());
     }
@@ -71,7 +71,7 @@ public class ItemRequestServiceTest {
         Long requestId = 1L;
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> {itemRequestService.getItemRequest(userId, requestId);});
+                () -> itemRequestService.getItemRequest(userId, requestId));
         assertEquals("Ошибка при получении запроса. Пользователя с id = " + userId + " нет.",
                 exception.getMessage());
     }
@@ -84,7 +84,7 @@ public class ItemRequestServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(itemRequestRepository.findById(requestId)).thenReturn(Optional.empty());
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> {itemRequestService.getItemRequest(userId, requestId);});
+                () -> itemRequestService.getItemRequest(userId, requestId));
         assertEquals("Ошибка при получении запроса. Запроса с id = " + requestId + "нет.",
                 exception.getMessage());
     }

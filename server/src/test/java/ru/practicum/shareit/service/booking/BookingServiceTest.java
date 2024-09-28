@@ -51,7 +51,7 @@ public class BookingServiceTest {
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         when(itemRepository.getById(booking.getItem().getId())).thenReturn(item);
         DataException exception = assertThrows(DataException.class,
-                () -> {bookingService.confirmationBooking(userId, bookingId, approved);});
+                () -> bookingService.confirmationBooking(userId, bookingId, approved));
         assertEquals("Ошибка при подтверждении бронирования. Пользователь не владелец вещи.",
                 exception.getMessage());
     }
@@ -66,7 +66,7 @@ public class BookingServiceTest {
         when(bookingMapper.toBooking(bookingDtoInput)).thenReturn(booking);
         when(itemRepository.findById(bookingDtoInput.getItemId())).thenReturn(Optional.empty());
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> {bookingService.createBooking(userId, bookingDtoInput);});
+                () -> bookingService.createBooking(userId, bookingDtoInput));
         assertEquals("Ошибка при бронировании. Такой вещи нет.", exception.getMessage());
     }
 
@@ -82,7 +82,7 @@ public class BookingServiceTest {
         when(bookingMapper.toBooking(bookingDtoInput)).thenReturn(booking);
         when(itemRepository.findById(bookingDtoInput.getItemId())).thenReturn(Optional.of(item));
         DataException exception = assertThrows(DataException.class,
-                () -> {bookingService.createBooking(userId, bookingDtoInput);});
+                () -> bookingService.createBooking(userId, bookingDtoInput));
         assertEquals("Ошибка при бронировании. Вещи недоступна.", exception.getMessage());
     }
 
@@ -93,7 +93,7 @@ public class BookingServiceTest {
         State state = State.ALL;
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> {bookingService.getAllBookingsFromUser(typeUser, userId, state);});
+                () -> bookingService.getAllBookingsFromUser(typeUser, userId, state));
         assertEquals("Ошибка при получении информации о бронированиях. Пользователя с id = "
                 + userId + " нет.", exception.getMessage());
     }
@@ -110,7 +110,7 @@ public class BookingServiceTest {
         booking.getItem().getOwner().setId(3L);
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         DataException exception = assertThrows(DataException.class,
-                () -> {bookingService.getBooking(userId, bookingId);});
+                () -> bookingService.getBooking(userId, bookingId));
         assertEquals("Ошибка при получении информации о бронировании."
                 + " Информация может быть предоставлена только владельцу или создателю запроса на бронирование",
                 exception.getMessage());

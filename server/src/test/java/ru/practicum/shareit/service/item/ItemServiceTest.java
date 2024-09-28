@@ -55,7 +55,7 @@ public class ItemServiceTest {
         CommentDto commentDto = new CommentDto();
         when(bookingRepository.findByBookerIdAndItemId(userId, itemId)).thenReturn(Optional.empty());
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> {itemService.createComment(userId, itemId, commentDto);});
+                () -> itemService.createComment(userId, itemId, commentDto));
         assertEquals("Ошибка при создании отзыва. Пользователь не бронировал эту вещь.",
                 exception.getMessage());
     }
@@ -69,7 +69,7 @@ public class ItemServiceTest {
         booking.setEnd(LocalDateTime.now().plusDays(1));
         when(bookingRepository.findByBookerIdAndItemId(userId, itemId)).thenReturn(Optional.of(booking));
         DataException exception = assertThrows(DataException.class,
-                () -> {itemService.createComment(userId, itemId, commentDto);});
+                () -> itemService.createComment(userId, itemId, commentDto));
         assertEquals("Ошибка при создании отзыва. Бронирование ещё не завершено.", exception.getMessage());
     }
 
@@ -79,7 +79,7 @@ public class ItemServiceTest {
         ItemDto itemDto = new ItemDto();
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> {itemService.createItem(userId, itemDto);});
+                () -> itemService.createItem(userId, itemDto));
         assertEquals("Ошибка при создании вещи. Пользователя с id = " + userId + " нет.",
                 exception.getMessage());
     }
@@ -93,7 +93,7 @@ public class ItemServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(itemRequestRepository.findById(itemDto.getRequestId())).thenReturn(Optional.empty());
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> {itemService.createItem(userId, itemDto);});
+                () -> itemService.createItem(userId, itemDto));
         assertEquals("Запроса с id = " + itemDto.getRequestId() + " нет.", exception.getMessage());
     }
 
@@ -107,7 +107,7 @@ public class ItemServiceTest {
         itemOld.getOwner().setId(2L);
         when(itemRepository.getById(itemId)).thenReturn(itemOld);
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> {itemService.updateItem(userId, itemId, itemDto);});
+                () -> itemService.updateItem(userId, itemId, itemDto));
         assertEquals("Ошибка, эта вещь не принадлежит пользователю.", exception.getMessage());
     }
 
