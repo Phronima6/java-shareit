@@ -26,7 +26,7 @@ public class ItemClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> createComment( final Long userId, final Long itemId, final CommentDto commentDto) {
+    public ResponseEntity<Object> createComment(final Long userId, final Long itemId, final CommentDto commentDto) {
         return post("/" + itemId + "/comment", userId, commentDto);
     }
 
