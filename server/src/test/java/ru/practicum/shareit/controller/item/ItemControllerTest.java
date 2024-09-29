@@ -70,7 +70,7 @@ public class ItemControllerTest {
     void getItem() throws Exception {
         ItemDto itemDto = new ItemDto();
         when(itemService.getItem(anyLong(), anyLong())).thenReturn(itemDto);
-        mockMvc.perform(get(PATH_ITEM + "/{" + PATH_ITEM_ID +"}", 1)
+        mockMvc.perform(get(PATH_ITEM + "/{" + PATH_ITEM_ID + "}", 1)
                         .header(X_HEADER, 1))
                 .andExpect(status().isOk());
     }
@@ -79,7 +79,7 @@ public class ItemControllerTest {
     void updateItem() throws Exception {
         ItemDto itemDto = new ItemDto();
         when(itemService.updateItem(anyLong(), anyLong(), any(ItemDto.class))).thenReturn(itemDto);
-        mockMvc.perform(patch(PATH_ITEM + "/{" + PATH_ITEM_ID +"}", 1)
+        mockMvc.perform(patch(PATH_ITEM + "/{" + PATH_ITEM_ID + "}", 1)
                         .header(X_HEADER, 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(itemDto)))
