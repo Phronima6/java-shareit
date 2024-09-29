@@ -8,6 +8,9 @@ ___
 ___
 *Добавлена ветка <span style="color:green">add-bookings</span>.*<br>
 *Версия приложения:* <span style="color:yellow">**ver 1.1**</span> (Привести в соответствие с ТЗ спринта № 15).<br>
+___
+*Добавлена ветка <span style="color:green">add-item-requests-and-gateway</span>.*<br>
+*Версия приложения:* <span style="color:yellow">**ver 1.2**</span> (Привести в соответствие с ТЗ спринта № 16).<br>
 
 *Диаграмма базы данных ShareIt:*<br>
 ![Диаграмма базы данных ShareIt](/diagramShareIt.svg)
