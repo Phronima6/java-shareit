@@ -16,37 +16,39 @@ import ru.practicum.shareit.booking.dto.BookingDtoInput;
 public class BookingController {
 
     BookingClient bookingClient;
-    static final String xHeader = "X-Sharer-User-Id";
+    static final String PATH_BOOKING_ID = "booking-id";
+    static final String PATH_OWNER = "/owner";
+    static final String X_HEADER = "X-Sharer-User-Id";
 
-    @PatchMapping("/{bookingId}")
-    public ResponseEntity<Object> confirmationBooking(@RequestHeader(xHeader) @Positive final Long userId,
-                                                      @PathVariable final @Positive Long bookingId,
+    @PatchMapping("/{" + PATH_BOOKING_ID + "}")
+    public ResponseEntity<Object> confirmationBooking(@RequestHeader(X_HEADER) @Positive final Long userId,
+                                                      @PathVariable(PATH_BOOKING_ID) final @Positive Long bookingId,
                                                       @RequestParam final Boolean approved) {
         return bookingClient.confirmationBooking(userId, bookingId, approved);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Object> createBooking(@RequestHeader(xHeader) @Positive final Long userId,
+    public ResponseEntity<Object> createBooking(@RequestHeader(X_HEADER) @Positive final Long userId,
                                                 @RequestBody final BookingDtoInput bookingDtoInput) {
         return bookingClient.createBooking(userId, bookingDtoInput);
     }
 
-    @GetMapping("/owner")
-    public ResponseEntity<Object> getAllBookingsFromOwner(@RequestHeader(xHeader) @Positive final Long userId,
+    @GetMapping(PATH_OWNER)
+    public ResponseEntity<Object> getAllBookingsFromOwner(@RequestHeader(X_HEADER) @Positive final Long userId,
                                                           @RequestParam (defaultValue = "ALL") final String state) {
         return bookingClient.getAllBookingsFromOwner(userId, state);
     }
 
     @GetMapping
-    public ResponseEntity<Object> getAllBookingsFromUser(@RequestHeader(xHeader) @Positive final Long userId,
+    public ResponseEntity<Object> getAllBookingsFromUser(@RequestHeader(X_HEADER) @Positive final Long userId,
                                                          @RequestParam (defaultValue = "ALL") final String state) {
         return bookingClient.getAllBookingsFromUser(userId, state);
     }
 
-    @GetMapping("/{bookingId}")
-    public ResponseEntity<Object> getBooking(@RequestHeader(xHeader) @Positive final Long userId,
-                                             @PathVariable @Positive final Long bookingId) {
+    @GetMapping("/{" + PATH_BOOKING_ID + "}")
+    public ResponseEntity<Object> getBooking(@RequestHeader(X_HEADER) @Positive final Long userId,
+                                             @PathVariable(PATH_BOOKING_ID) @Positive final Long bookingId) {
         return bookingClient.getBooking(userId, bookingId);
     }
 

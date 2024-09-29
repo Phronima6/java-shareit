@@ -16,28 +16,30 @@ import java.util.Collection;
 public class ItemRequestController {
 
     ItemRequestService itemRequestService;
-    static final String xHeader = "X-Sharer-User-Id";
+    static final String PATH_ALL = "/all";
+    static final String PATH_REQUEST_ID = "request-id";
+    static final String X_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemRequestDto createItemRequest(@RequestHeader(xHeader) final Long userId,
+    public ItemRequestDto createItemRequest(@RequestHeader(X_HEADER) final Long userId,
                                             @RequestBody final ItemRequestDto itemRequestDto) {
         return itemRequestService.createItemRequest(userId, itemRequestDto);
     }
 
     @GetMapping
-    public Collection<ItemRequestDto> getAllFromRequestor(@RequestHeader(xHeader) final Long userId) {
+    public Collection<ItemRequestDto> getAllFromRequestor(@RequestHeader(X_HEADER) final Long userId) {
         return itemRequestService.getAllFromRequestor(userId);
     }
 
-    @GetMapping("/{requestId}")
-    public ItemRequestDto getItemRequest(@RequestHeader(xHeader) final Long userId,
-                                         @PathVariable final Long requestId) {
+    @GetMapping("/{" + PATH_REQUEST_ID + "}")
+    public ItemRequestDto getItemRequest(@RequestHeader(X_HEADER) final Long userId,
+                                         @PathVariable(PATH_REQUEST_ID) final Long requestId) {
         return itemRequestService.getItemRequest(userId, requestId);
     }
 
-    @GetMapping("/all")
-    public Collection<ItemRequestDto> getOtherItemRequests(@RequestHeader(xHeader) final Long userId) {
+    @GetMapping(PATH_ALL)
+    public Collection<ItemRequestDto> getOtherItemRequests(@RequestHeader(X_HEADER) final Long userId) {
         return itemRequestService.getOtherItemRequests(userId);
     }
 

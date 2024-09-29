@@ -17,42 +17,45 @@ import java.util.Collection;
 public class ItemController {
 
     ItemService itemService;
-    static final String xHeader = "X-Sharer-User-Id";
+    static final String PATH_COMMENT = "comment";
+    static final String PATH_ITEM_ID = "item-id";
+    static final String PATH_SEARCH = "/search";
+    static final String X_HEADER = "X-Sharer-User-Id";
 
-    @PostMapping("/{itemId}/comment")
+    @PostMapping("/{" + PATH_ITEM_ID + "}/" + PATH_COMMENT)
     @ResponseStatus(HttpStatus.CREATED)
-    public CommentDto createComment(@RequestHeader(xHeader) final Long userId,
-                                    @PathVariable final Long itemId,
+    public CommentDto createComment(@RequestHeader(X_HEADER) final Long userId,
+                                    @PathVariable(PATH_ITEM_ID) final Long itemId,
                                     @RequestBody final CommentDto commentDto) {
         return itemService.createComment(userId, itemId, commentDto);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDto createItem(@RequestHeader(xHeader) final Long userId,
+    public ItemDto createItem(@RequestHeader(X_HEADER) final Long userId,
                               @RequestBody final ItemDto itemDto) {
         return itemService.createItem(userId, itemDto);
     }
 
     @GetMapping
-    public Collection<ItemDto> getAllItemsFromUser(@RequestHeader(xHeader) final Long userId) {
+    public Collection<ItemDto> getAllItemsFromUser(@RequestHeader(X_HEADER) final Long userId) {
         return itemService.getAllItemsFromUser(userId);
     }
 
-    @GetMapping("/{itemId}")
-    public ItemDto getItem(@RequestHeader(xHeader) final Long userId,
-                           @PathVariable final Long itemId) {
+    @GetMapping("/{" + PATH_ITEM_ID + "}")
+    public ItemDto getItem(@RequestHeader(X_HEADER) final Long userId,
+                           @PathVariable(PATH_ITEM_ID) final Long itemId) {
         return itemService.getItem(userId, itemId);
     }
 
-    @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@RequestHeader(xHeader) final Long userId,
-                              @PathVariable final Long itemId,
+    @PatchMapping("/{" + PATH_ITEM_ID + "}")
+    public ItemDto updateItem(@RequestHeader(X_HEADER) final Long userId,
+                              @PathVariable(PATH_ITEM_ID) final Long itemId,
                               @RequestBody final ItemDto itemDto) {
         return itemService.updateItem(userId, itemId, itemDto);
     }
 
-    @GetMapping("/search")
+    @GetMapping(PATH_SEARCH)
     public Collection<ItemDto> searchItem(@RequestParam final String text) {
         return itemService.searchItem(text);
     }

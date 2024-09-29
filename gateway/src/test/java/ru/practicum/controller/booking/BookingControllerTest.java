@@ -4,6 +4,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,16 +25,21 @@ import ru.practicum.shareit.booking.dto.BookingDtoOutput;
 import java.util.Collections;
 
 @ExtendWith(MockitoExtension.class)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingControllerTest {
 
     @Mock
-    private BookingClient bookingClient;
+    BookingClient bookingClient;
     @InjectMocks
-    private BookingController bookingController;
+    BookingController bookingController;
     @Autowired
-    private MockMvc mockMvc;
+    MockMvc mockMvc;
     @Autowired
-    private ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
+    static final String PATH_BOOKINGS = "/bookings";
+    static final String PATH_BOOKING_ID = "booking-id";
+    static final String PATH_OWNER = "/owner";
+    static final String X_HEADER = "X-Sharer-User-Id";
 
     @BeforeEach
     void setUp() {
@@ -45,8 +52,8 @@ public class BookingControllerTest {
         BookingDtoOutput bookingDtoOutput = new BookingDtoOutput();
         when(bookingClient.confirmationBooking(anyLong(), anyLong(), anyBoolean()))
                 .thenReturn(ResponseEntity.ok(bookingDtoOutput));
-        mockMvc.perform(patch("/bookings/{bookingId}", 1)
-                        .header("X-Sharer-User-Id", 1)
+        mockMvc.perform(patch(PATH_BOOKINGS + "/{" + PATH_BOOKING_ID + "}", 1)
+                        .header(X_HEADER, 1)
                         .param("approved", "true"))
                 .andExpect(status().isOk());
     }
@@ -57,8 +64,8 @@ public class BookingControllerTest {
         BookingDtoOutput bookingDtoOutput = new BookingDtoOutput();
         when(bookingClient.createBooking(anyLong(), any(BookingDtoInput.class)))
                 .thenReturn(ResponseEntity.status(HttpStatus.CREATED).body(bookingDtoOutput));
-        mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", 1)
+        mockMvc.perform(post(PATH_BOOKINGS)
+                        .header(X_HEADER, 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(bookingDtoInput)))
                 .andExpect(status().isCreated());
@@ -68,8 +75,8 @@ public class BookingControllerTest {
     void getAllBookingsFromOwner() throws Exception {
         when(bookingClient.getAllBookingsFromOwner(anyLong(),
                 anyString())).thenReturn(ResponseEntity.ok(Collections.emptyList()));
-        mockMvc.perform(get("/bookings/owner")
-                        .header("X-Sharer-User-Id", 1)
+        mockMvc.perform(get(PATH_BOOKINGS + PATH_OWNER)
+                        .header(X_HEADER, 1)
                         .param("state", "ALL"))
                 .andExpect(status().isOk());
     }
@@ -78,8 +85,8 @@ public class BookingControllerTest {
     void getAllBookingsFromUser() throws Exception {
         when(bookingClient.getAllBookingsFromUser(anyLong(),
                 anyString())).thenReturn(ResponseEntity.ok(Collections.emptyList()));
-        mockMvc.perform(get("/bookings")
-                        .header("X-Sharer-User-Id", 1)
+        mockMvc.perform(get(PATH_BOOKINGS)
+                        .header(X_HEADER, 1)
                         .param("state", "ALL"))
                 .andExpect(status().isOk());
     }
@@ -88,8 +95,8 @@ public class BookingControllerTest {
     void getBooking() throws Exception {
         BookingDtoOutput bookingDtoOutput = new BookingDtoOutput();
         when(bookingClient.getBooking(anyLong(), anyLong())).thenReturn(ResponseEntity.ok(bookingDtoOutput));
-        mockMvc.perform(get("/bookings/{bookingId}", 1)
-                        .header("X-Sharer-User-Id", 1))
+        mockMvc.perform(get(PATH_BOOKINGS + "/{" + PATH_BOOKING_ID + "}", 1)
+                        .header(X_HEADER, 1))
                 .andExpect(status().isOk());
     }
 

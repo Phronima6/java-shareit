@@ -1,6 +1,8 @@
 package ru.practicum.shareit.controller.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,16 +21,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserControllerTest {
 
     @Mock
-    private UserService userService;
+    UserService userService;
     @InjectMocks
-    private UserController userController;
+    UserController userController;
     @Autowired
-    private MockMvc mockMvc;
+    MockMvc mockMvc;
     @Autowired
-    private ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
+    static final String PATH_USERS = "/users";
+    static final String PATH_USER_ID = "user-id";
 
     @BeforeEach
     void setUp() {
@@ -42,7 +47,7 @@ public class UserControllerTest {
         userDto.setName("John Doe");
         userDto.setEmail("john.doe@example.com");
         when(userService.createUser(any(UserDto.class))).thenReturn(userDto);
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post(PATH_USERS)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDto)))
                 .andExpect(status().isCreated());
@@ -51,7 +56,7 @@ public class UserControllerTest {
     @Test
     void deleteUser() throws Exception {
         doNothing().when(userService).deleteUser(anyLong());
-        mockMvc.perform(delete("/users/{userId}", 1))
+        mockMvc.perform(delete(PATH_USERS + "/{" + PATH_USER_ID + "}", 1))
                 .andExpect(status().isNoContent());
     }
 
@@ -59,7 +64,7 @@ public class UserControllerTest {
     void getUser() throws Exception {
         UserDto userDto = new UserDto();
         when(userService.getUser(anyLong())).thenReturn(userDto);
-        mockMvc.perform(get("/users/{userId}", 1))
+        mockMvc.perform(get(PATH_USERS + "/{" + PATH_USER_ID + "}", 1))
                 .andExpect(status().isOk());
     }
 
@@ -67,7 +72,7 @@ public class UserControllerTest {
     void updateUser() throws Exception {
         UserDto userDto = new UserDto();
         when(userService.updateUser(anyLong(), any(UserDto.class))).thenReturn(userDto);
-        mockMvc.perform(patch("/users/{userId}", 1)
+        mockMvc.perform(patch(PATH_USERS + "/{" + PATH_USER_ID + "}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDto)))
                 .andExpect(status().isOk());

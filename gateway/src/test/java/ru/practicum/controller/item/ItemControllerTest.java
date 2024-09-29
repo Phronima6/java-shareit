@@ -1,6 +1,8 @@
 package ru.practicum.controller.item;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,16 +24,22 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemControllerTest {
 
     @Mock
-    private ItemClient itemClient;
+    ItemClient itemClient;
     @InjectMocks
-    private ItemController itemController;
+    ItemController itemController;
     @Autowired
-    private MockMvc mockMvc;
+    MockMvc mockMvc;
     @Autowired
-    private ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
+    static final String PATH_COMMENT = "comment";
+    static final String PATH_ITEMS = "/items";
+    static final String PATH_ITEM_ID = "item-id";
+    static final String PATH_SEARCH = "/search";
+    static final String X_HEADER = "X-Sharer-User-Id";
 
     @BeforeEach
     void setUp() {
@@ -47,8 +55,8 @@ public class ItemControllerTest {
         itemDto.setAvailable(true);
         when(itemClient.createItem(anyLong(), any(ItemDto.class)))
                 .thenReturn(ResponseEntity.status(HttpStatus.CREATED).body(itemDto));
-        mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", 1)
+        mockMvc.perform(post(PATH_ITEMS)
+                        .header(X_HEADER, 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(itemDto)))
                 .andExpect(status().isCreated());
@@ -57,8 +65,8 @@ public class ItemControllerTest {
     @Test
     void getAllItemsFromUser() throws Exception {
         when(itemClient.getAllItemsFromUser(anyLong())).thenReturn(ResponseEntity.ok(Collections.emptyList()));
-        mockMvc.perform(get("/items")
-                        .header("X-Sharer-User-Id", 1))
+        mockMvc.perform(get(PATH_ITEMS)
+                        .header(X_HEADER, 1))
                 .andExpect(status().isOk());
     }
 
@@ -66,8 +74,8 @@ public class ItemControllerTest {
     void getItem() throws Exception {
         ItemDto itemDto = new ItemDto();
         when(itemClient.getItem(anyLong(), anyLong())).thenReturn(ResponseEntity.ok(itemDto));
-        mockMvc.perform(get("/items/{itemId}", 1)
-                        .header("X-Sharer-User-Id", 1))
+        mockMvc.perform(get(PATH_ITEMS + "/{" + PATH_ITEM_ID + "}", 1)
+                        .header(X_HEADER, 1))
                 .andExpect(status().isOk());
     }
 
@@ -75,8 +83,8 @@ public class ItemControllerTest {
     void updateItem() throws Exception {
         ItemDto itemDto = new ItemDto();
         when(itemClient.updateItem(anyLong(), anyLong(), any(ItemDto.class))).thenReturn(ResponseEntity.ok(itemDto));
-        mockMvc.perform(patch("/items/{itemId}", 1)
-                        .header("X-Sharer-User-Id", 1)
+        mockMvc.perform(patch(PATH_ITEMS + "/{" + PATH_ITEM_ID + "}", 1)
+                        .header(X_HEADER, 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(itemDto)))
                 .andExpect(status().isOk());
@@ -85,8 +93,8 @@ public class ItemControllerTest {
     @Test
     void searchItem() throws Exception {
         when(itemClient.searchItem(anyLong(), anyString())).thenReturn(ResponseEntity.ok(Collections.emptyList()));
-        mockMvc.perform(get("/items/search")
-                        .header("X-Sharer-User-Id", 1)
+        mockMvc.perform(get(PATH_ITEMS + PATH_SEARCH)
+                        .header(X_HEADER, 1)
                         .param("text", "test"))
                 .andExpect(status().isOk());
     }

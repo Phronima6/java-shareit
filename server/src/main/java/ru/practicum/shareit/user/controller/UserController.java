@@ -15,6 +15,7 @@ import ru.practicum.shareit.user.service.UserService;
 public class UserController {
 
     UserService userService;
+    static final String PATH_USER_ID = "user-id";
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -22,20 +23,20 @@ public class UserController {
         return userService.createUser(userDto);
     }
 
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/{" + PATH_USER_ID + "}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable final Long userId) {
+    public void deleteUser(@PathVariable(PATH_USER_ID) final Long userId) {
         userService.deleteUser(userId);
     }
 
-    @GetMapping("/{userId}")
-    public UserDto getUser(@PathVariable final Long userId) {
+    @GetMapping("/{" + PATH_USER_ID + "}")
+    public UserDto getUser(@PathVariable(PATH_USER_ID) final Long userId) {
         return userService.getUser(userId);
     }
 
 
-    @PatchMapping("/{userId}")
-    public UserDto updateUser(@PathVariable final Long userId,
+    @PatchMapping("/{" + PATH_USER_ID + "}")
+    public UserDto updateUser(@PathVariable(PATH_USER_ID) final Long userId,
                               @RequestBody final UserDto userDto) {
         return userService.updateUser(userId, userDto);
     }

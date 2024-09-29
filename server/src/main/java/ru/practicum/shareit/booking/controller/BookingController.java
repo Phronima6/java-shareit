@@ -19,37 +19,39 @@ import java.util.Collection;
 public class BookingController {
 
     BookingService bookingService;
-    static final String xHeader = "X-Sharer-User-Id";
+    static final String PATH_BOOKING_ID = "booking-id";
+    static final String PATH_OWNER = "/owner";
+    static final String X_HEADER = "X-Sharer-User-Id";
 
-    @PatchMapping("/{bookingId}")
-    public BookingDtoOutput confirmationBooking(@RequestHeader(xHeader) final Long userId,
-                                               @PathVariable final Long bookingId,
+    @PatchMapping("/{" + PATH_BOOKING_ID + "}")
+    public BookingDtoOutput confirmationBooking(@RequestHeader(X_HEADER) final Long userId,
+                                               @PathVariable(PATH_BOOKING_ID) final Long bookingId,
                                                @RequestParam final Boolean approved) {
         return bookingService.confirmationBooking(userId, bookingId, approved);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BookingDtoOutput createBooking(@RequestHeader(xHeader) final Long userId,
+    public BookingDtoOutput createBooking(@RequestHeader(X_HEADER) final Long userId,
                                           @RequestBody final BookingDtoInput bookingDtoInput) {
         return bookingService.createBooking(userId, bookingDtoInput);
     }
 
-    @GetMapping("/owner")
-    public Collection<BookingDtoOutput> getAllBookingsFromOwner(@RequestHeader(xHeader) final Long userId,
+    @GetMapping(PATH_OWNER)
+    public Collection<BookingDtoOutput> getAllBookingsFromOwner(@RequestHeader(X_HEADER) final Long userId,
                                                                 @RequestParam (defaultValue = "ALL") final State state) {
         return bookingService.getAllBookingsFromUser(TypeUser.OWNER, userId, state);
     }
 
     @GetMapping
-    public Collection<BookingDtoOutput> getAllBookingsFromUser(@RequestHeader(xHeader) final Long userId,
+    public Collection<BookingDtoOutput> getAllBookingsFromUser(@RequestHeader(X_HEADER) final Long userId,
                                                                @RequestParam (defaultValue = "ALL") final State state) {
         return bookingService.getAllBookingsFromUser(TypeUser.USER, userId, state);
     }
 
-    @GetMapping("/{bookingId}")
-    public BookingDtoOutput getBooking(@RequestHeader(xHeader) final Long userId,
-                                       @PathVariable final Long bookingId) {
+    @GetMapping("/{" + PATH_BOOKING_ID + "}")
+    public BookingDtoOutput getBooking(@RequestHeader(X_HEADER) final Long userId,
+                                       @PathVariable(PATH_BOOKING_ID) final Long bookingId) {
         return bookingService.getBooking(userId, bookingId);
     }
 

@@ -4,6 +4,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,16 +23,19 @@ import ru.practicum.shareit.user.controller.UserController;
 import ru.practicum.shareit.user.dto.UserDto;
 
 @ExtendWith(MockitoExtension.class)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserControllerTest {
 
     @Mock
-    private UserClient userClient;
+    UserClient userClient;
     @InjectMocks
-    private UserController userController;
+    UserController userController;
     @Autowired
-    private MockMvc mockMvc;
+    MockMvc mockMvc;
     @Autowired
-    private ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
+    static final String PATH_USERS = "/users";
+    static final String PATH_USER_ID = "user-id";
 
     @BeforeEach
     void setUp() {
@@ -44,7 +49,7 @@ public class UserControllerTest {
         userDto.setName("John Doe");
         userDto.setEmail("john.doe@example.com");
         when(userClient.createUser(any(UserDto.class))).thenReturn(ResponseEntity.status(HttpStatus.CREATED).body(userDto));
-        mockMvc.perform(post("/users")
+        mockMvc.perform(post(PATH_USERS)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDto)))
                 .andExpect(status().isCreated());
@@ -54,7 +59,7 @@ public class UserControllerTest {
     void getUser() throws Exception {
         UserDto userDto = new UserDto();
         when(userClient.getUser(anyLong())).thenReturn(ResponseEntity.ok(userDto));
-        mockMvc.perform(get("/users/{userId}", 1))
+        mockMvc.perform(get(PATH_USERS + "/{" + PATH_USER_ID + "}", 1))
                 .andExpect(status().isOk());
     }
 
@@ -62,7 +67,7 @@ public class UserControllerTest {
     void updateUser() throws Exception {
         UserDto userDto = new UserDto();
         when(userClient.updateUser(anyLong(), any(UserDto.class))).thenReturn(ResponseEntity.ok(userDto));
-        mockMvc.perform(patch("/users/{userId}", 1)
+        mockMvc.perform(patch(PATH_USERS + "/{" + PATH_USER_ID + "}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDto)))
                 .andExpect(status().isOk());

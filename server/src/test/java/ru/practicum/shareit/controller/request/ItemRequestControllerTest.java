@@ -1,6 +1,8 @@
 package ru.practicum.shareit.controller.request;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,16 +22,21 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemRequestControllerTest {
 
     @Mock
-    private ItemRequestService itemRequestService;
+    ItemRequestService itemRequestService;
     @InjectMocks
-    private ItemRequestController itemRequestController;
+    ItemRequestController itemRequestController;
     @Autowired
-    private MockMvc mockMvc;
+    MockMvc mockMvc;
     @Autowired
-    private ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
+    static final String PATH_ALL = "/all";
+    static final String PATH_REQUEST_ID = "request-id";
+    static final String PATH_REQUESTS = "/requests";
+    static final String X_HEADER = "X-Sharer-User-Id";
 
     @BeforeEach
     void setUp() {
@@ -43,8 +50,8 @@ public class ItemRequestControllerTest {
         itemRequestDto.setDescription("Sample description");
         when(itemRequestService.createItemRequest(anyLong(), any(ItemRequestDto.class)))
                 .thenReturn(itemRequestDto);
-        mockMvc.perform(post("/requests")
-                        .header("X-Sharer-User-Id", 1)
+        mockMvc.perform(post(PATH_REQUESTS)
+                        .header(X_HEADER, 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(itemRequestDto)))
                 .andExpect(status().isCreated());
@@ -54,8 +61,8 @@ public class ItemRequestControllerTest {
     void getAllFromRequestor() throws Exception {
         when(itemRequestService.getAllFromRequestor(anyLong()))
                 .thenReturn(Collections.emptyList());
-        mockMvc.perform(get("/requests")
-                        .header("X-Sharer-User-Id", 1))
+        mockMvc.perform(get(PATH_REQUESTS)
+                        .header(X_HEADER, 1))
                 .andExpect(status().isOk());
     }
 
@@ -64,8 +71,8 @@ public class ItemRequestControllerTest {
         ItemRequestDto itemRequestDto = new ItemRequestDto();
         when(itemRequestService.getItemRequest(anyLong(), anyLong()))
                 .thenReturn(itemRequestDto);
-        mockMvc.perform(get("/requests/{requestId}", 1)
-                        .header("X-Sharer-User-Id", 1))
+        mockMvc.perform(get(PATH_REQUESTS + "/{" + PATH_REQUEST_ID + "}", 1)
+                        .header(X_HEADER, 1))
                 .andExpect(status().isOk());
     }
 
@@ -73,8 +80,8 @@ public class ItemRequestControllerTest {
     void getOtherItemRequests() throws Exception {
         when(itemRequestService.getOtherItemRequests(anyLong()))
                 .thenReturn(Collections.emptyList());
-        mockMvc.perform(get("/requests/all")
-                        .header("X-Sharer-User-Id", 1))
+        mockMvc.perform(get(PATH_REQUESTS + PATH_ALL)
+                        .header(X_HEADER, 1))
                 .andExpect(status().isOk());
     }
 

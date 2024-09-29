@@ -1,5 +1,7 @@
 package ru.practicum.shareit.item.controller;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -12,10 +14,11 @@ import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import java.util.Map;
 
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Service
 public class ItemClient extends BaseClient {
 
-    private static final String API_PREFIX = "/items";
+    static final String API_PREFIX = "/items";
 
     @Autowired
     public ItemClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {

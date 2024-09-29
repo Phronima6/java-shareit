@@ -18,6 +18,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 public class UserController {
 
     UserClient userClient;
+    static final String PATH_USER_ID = "user-id";
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -25,20 +26,20 @@ public class UserController {
         return userClient.createUser(userDto);
     }
 
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/{" + PATH_USER_ID + "}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable @Positive final Long userId) {
+    public void deleteUser(@PathVariable(PATH_USER_ID) @Positive final Long userId) {
         userClient.deleteUser(userId);
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<Object> getUser(@PathVariable @Positive final Long userId) {
+    @GetMapping("/{" + PATH_USER_ID + "}")
+    public ResponseEntity<Object> getUser(@PathVariable(PATH_USER_ID) @Positive final Long userId) {
         return userClient.getUser(userId);
     }
 
 
-    @PatchMapping("/{userId}")
-    public ResponseEntity<Object> updateUser(@PathVariable @Positive final Long userId,
+    @PatchMapping("/{" + PATH_USER_ID + "}")
+    public ResponseEntity<Object> updateUser(@PathVariable(PATH_USER_ID) @Positive final Long userId,
                                              @RequestBody final UserDto userDto) {
         return userClient.updateUser(userId, userDto);
     }
